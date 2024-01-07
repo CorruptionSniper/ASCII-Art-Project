@@ -34,6 +34,7 @@ class Mapping():
     def __init__(self, chars, thresholds, image=None):
         self.chars = chars
         self.mappedThresholds = self.getMapping(thresholds)
+        self.image = image
 
     def getMapping(self, thresholds):
         thresholds[-1] = 256
@@ -49,20 +50,39 @@ class Mapping():
         return self.chars[self.mappedThresholds[pixel]]
     
 class SequenceMapping(Mapping):
-    def __init__(self, chars, thresholds, image=None):
-        super().__init__(chars, thresholds, image)
+    def __init__(self, sequences, thresholds, image=None):
+        super().__init__(sequences, thresholds, image)
         self.i = -1
     
     def __getitem__(self, pixel):
         self.i += 1
         location = self.chars[self.mappedThresholds[pixel]]
         return location[self.i%len(location)]
+    
+class TextureMapping(Mapping):
+    def __init__(self, textures, thresholds, image=None):
+        for i, texture in enumerate(textures):
+            if isinstance(texture, str) and texture.endswith('.txt'):
+                with open(texture) as f:
+                    textures[i] = [line.strip("\n") for line in f.readlines()]
+        super().__init__(textures, thresholds, image)
+        self.maxX = self.image.dimensions[X]
+        self.x = -1
+        self.y = 0
+
+    def __getitem__(self, pixel):
+        self.x += 1
+        if self.x == self.maxX:
+            self.x = 0
+            self.y += 1
+        location = self.chars[self.mappedThresholds[pixel]]
+        return location[self.y%len(location)][self.x%len(location[0])]
 
 class ASCII_Image():
-    def __init__(self, filename, width=120, characters=chars8, thresholds=None, image:ImageHandler=ImageHandler,mapping:Mapping=Mapping, invert=False, adjustFactor=0, **kwargs):
+    def __init__(self, fileName, width=120, characters=chars8, thresholds=None, image:ImageHandler=ImageHandler,mapping:Mapping=Mapping, invert=False, adjustFactor=0, **kwargs):
         self.mappedImage = None
         self.distribution = None
-        self.image = image(filename, width)
+        self.image = image(fileName, width)
         self.chars = characters if not invert else characters[::-1]
         if not thresholds:
             i = ceil(256/len(self.chars))

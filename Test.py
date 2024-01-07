@@ -1,6 +1,4 @@
-import numpy as np
 from ASCIIArt import *
-from threading import Thread
 from time import perf_counter
 class Timing():
     def __init__(self, sinceLastOut=False, ms=False):
@@ -14,19 +12,26 @@ class Timing():
         if self.sinceLastOut:
             self.last = e
 
-    def tOut(self, label=""):
+    def totalOut(self, label=""):
         if not self.sinceLastOut:
             self.out(label)
         print(f"Total: {(perf_counter() - self.s)*self.unit}")
 
+def timedTest(*args, **kwargs):
+    t = Timing(True, True)
+    asciiart = ASCII_Image(*args, **kwargs)
+    t.out("Initialise")
+    output = asciiart.map()
+    t.out("Map")
+    asciiart.map("output.txt")
+    t.out("File Output")
+    t.totalOut()
+
 sentence = None
 with open("Text/Never Gonna Give You Up.txt") as f:
     sentence = "".join([x for x in f.read() if x.isalnum() or x in "-.,"])
-t = Timing(True, True)
-asciiart = ASCII_Image("Images/Companion Cube.png", characters=('@$%&','#', sentence.upper(), sentence.lower(), '?!', '\\/', '_.', ' '), adjustFactor=1,mapping=SequenceMapping, width=160, invert=True)
-t.out("Initialise")
-output = asciiart.map()
-t.out("Map")
-asciiart.map("output.txt")
-t.out("File Output")
-t.tOut()
+"""
+Sentence sequence: ('&','#', sentence.upper(), sentence.lower(), '?', '<', '_-', ' ')
+Binary Texture: ["CharTextures/1.txt", "CharTextures/0.txt", "CharTextures/0Negative.txt", "CharTextures/1Negative.txt"]
+"""
+timedTest("Images/Companion Cube.png", characters=["CharTextures/1.txt", "CharTextures/0.txt", "CharTextures/0Negative.txt", "CharTextures/1Negative.txt"], adjustFactor=1,mapping=TextureMapping, width=500)
