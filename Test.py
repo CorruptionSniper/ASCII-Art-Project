@@ -34,4 +34,4 @@ with open("Text/Never Gonna Give You Up.txt") as f:
 Sentence sequence: ('&','#', sentence.upper(), sentence.lower(), '?', '<', '_-', ' ')
 Binary Texture: ["CharTextures/1.txt", "CharTextures/0.txt", "CharTextures/0Negative.txt", "CharTextures/1Negative.txt"]
 """
-timedTest("Images/Companion Cube.png", characters=["CharTextures/1.txt", "CharTextures/0.txt", "CharTextures/0Negative.txt", "CharTextures/1Negative.txt"], adjustFactor=1,mapping=TextureMapping, width=500)
+timedTest("Images/Companion Cube.png", characters=["CharTextures/1.txt", "CharTextures/0.txt", "CharTextures/0Negative.txt", "CharTextures/1Negative.txt"], adjustFactor=1, width=500)
